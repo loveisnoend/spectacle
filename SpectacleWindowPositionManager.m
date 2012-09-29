@@ -2,6 +2,11 @@
 #import "SpectacleScreenDetection.h"
 #import "SpectacleUtilities.h"
 #import "SpectacleConstants.h"
+#import <ZeroKit/ZeroKitAccessibilityElement.h>
+
+@interface ZeroKitAccessibilityElement (Private)
+@property(readwrite) AXUIElementRef element;
+@end
 
 @interface AccessibilityWindow : ZeroKitAccessibilityElement {
     CGRect _frameCache;
@@ -270,7 +275,13 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
 @implementation AccessibilityWindow
 @dynamic frame;
 + (AccessibilityWindow *)withElement:(AXUIElementRef)element {
-    return (AccessibilityWindow*)[super withElement:element];
+    return [[[self alloc] initWithElement:element] autorelease];
+}
+- (id)initWithElement:(AXUIElementRef)element {
+    if(!(self = [super init]))
+        return nil;
+    self.element = element;
+    return self;
 }
 - (id)init {
     if(!(self = [super init]))
