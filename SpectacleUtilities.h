@@ -22,6 +22,13 @@
 
 #define MovingToNextOrPreviousDisplay(action) ((action == SpectacleWindowActionNextDisplay) || (action == SpectacleWindowActionPreviousDisplay))
 
+#define WindowIsLeftAligned(f, splitFactor, screenFrame) \
+    ((f.origin.x == screenFrame.origin.x) \
+    && (f.size.width == floor(screenFrame.size.width * splitFactor)))
+#define WindowIsRightAligned(f, splitFactor, screenFrame) \
+    ((f.origin.x == screenFrame.origin.x + floor(screenFrame.size.width * splitFactor)) \
+    && f.size.width == floor(screenFrame.size.width * (1.0 - splitFactor)))
+
 #pragma mark -
 
 #define WindowRectToString(windowRect) [NSString stringWithFormat: @"(%f, %f) %fx%f", windowRect.origin.x, windowRect.origin.y, windowRect.size.width, windowRect.size.height]
