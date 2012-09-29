@@ -34,23 +34,11 @@
     BOOL isStatusItemEnabled = [[NSUserDefaults standardUserDefaults] boolForKey: SpectacleStatusItemEnabledPreference];
     
     myHotKeyRecorders = [[NSDictionary alloc] initWithObjectsAndKeys:
-        myMoveToCenterHotKeyRecorder,          SpectacleWindowActionMoveToCenter,
         myMoveToFullscreenHotKeyRecorder,      SpectacleWindowActionMoveToFullscreen,
         myMoveToLeftHotKeyRecorder,            SpectacleWindowActionMoveToLeftHalf,
         myMoveToRightHotKeyRecorder,           SpectacleWindowActionMoveToRightHalf,
-        myMoveToTopHotKeyRecorder,             SpectacleWindowActionMoveToTopHalf,
-        myMoveToBottomHotKeyRecorder,          SpectacleWindowActionMoveToBottomHalf,
-        myMoveToUpperLeftHotKeyRecorder,       SpectacleWindowActionMoveToUpperLeft,
-        myMoveToLowerLeftHotKeyRecorder,       SpectacleWindowActionMoveToLowerLeft,
-        myMoveToUpperRightHotKeyRecorder,      SpectacleWindowActionMoveToUpperRight,
-        myMoveToLowerRightHotKeyRecorder,      SpectacleWindowActionMoveToLowerRight,
         myMoveToNextDisplayHotKeyRecorder,     SpectacleWindowActionMoveToNextDisplay,
-        myMoveToPreviousDisplayHotKeyRecorder, SpectacleWindowActionMoveToPreviousDisplay,
-        myMoveToNextThirdHotKeyRecorder,       SpectacleWindowActionMoveToNextThird,
-        myMoveToPreviousThirdHotKeyRecorder,   SpectacleWindowActionMoveToPreviousThird,
-        myUndoLastMoveHotKeyRecorder,          SpectacleWindowActionUndoLastMove,
-        myRedoLastMoveHotKeyRecorder,          SpectacleWindowActionRedoLastMove, nil];
-    
+        myMoveToPreviousDisplayHotKeyRecorder, SpectacleWindowActionMoveToPreviousDisplay, nil];
     [self loadRegisteredHotKeys];
     
     if ([SpectacleUtilities isLoginItemEnabledForBundle: [SpectacleUtilities applicationBundle]]) {
