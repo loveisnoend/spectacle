@@ -181,14 +181,18 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
     if(!canChangeSize || !windowToMove)
         return CGRectNull;
 
+    CGFloat splitFactor = 0.6;
+    CGFloat xSplit = floor(visibleFrameOfScreen.size.width*splitFactor);
     windowRect.origin.y = visibleFrameOfScreen.origin.y;
-    if (action == SpectacleWindowActionRightHalf)
-        windowRect.origin.x = visibleFrameOfScreen.origin.x + floor(visibleFrameOfScreen.size.width / 2.0f);
-    else if(action == SpectacleWindowActionLeftHalf)
+    if (action == SpectacleWindowActionRightHalf) {
+        windowRect.origin.x = visibleFrameOfScreen.origin.x + xSplit;
+        windowRect.size.width = floor(visibleFrameOfScreen.size.width * (1.0 - splitFactor));
+    } else if(action == SpectacleWindowActionLeftHalf) {
         windowRect.origin.x = visibleFrameOfScreen.origin.x;
+        windowRect.size.width = floor(visibleFrameOfScreen.size.width * splitFactor);
+    }
     
     if ((action == SpectacleWindowActionLeftHalf) || (action == SpectacleWindowActionRightHalf)) {
-        windowRect.size.width = floor(visibleFrameOfScreen.size.width / 2.0f);
         windowRect.size.height = visibleFrameOfScreen.size.height;
 
         // Get the list of windows existing in this half
@@ -252,10 +256,11 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
     else if(MovingToNextOrPreviousDisplay(action)) {
         NSScreen *windowScreen = [SpectacleScreenDetection screenWithAction:SpectacleWindowActionFullscreen andRect:windowToMove.frame];
         NSRect visibleFrame = [windowScreen visibleFrame];
+        CGFloat windowScrXSplit = floor(visibleFrame.size.width*splitFactor);
         return [self recalculateWindowRect:windowToMove
                              frameOfScreen:frameOfScreen
                       visibleFrameOfScreen:visibleFrameOfScreen
-                                    action:(windowToMove.frame.origin.x >= (visibleFrame.origin.x + visibleFrame.size.width/2)) ? SpectacleWindowActionRightHalf : SpectacleWindowActionLeftHalf];
+                                    action:(windowToMove.frame.origin.x >= windowScrXSplit) ? SpectacleWindowActionRightHalf : SpectacleWindowActionLeftHalf];
     }
     return windowRect;
 }

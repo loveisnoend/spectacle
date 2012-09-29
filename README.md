@@ -2,6 +2,10 @@
 
 Spectacle allows you to easily organize your windows without using a mouse.
 
+# Changes in this fork
+
+This is a fork that turns Spectacles into a tiled window manager, that means that if you move a window to the left/right and one already occupies that space, both are resized to fit.
+
 # Requirements
 
 Spectacle has been built, and designed, for OS X 10.7 or later. Xcode 4.4.1 is recommended for building the project.
