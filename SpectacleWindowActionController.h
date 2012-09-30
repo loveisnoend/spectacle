@@ -12,16 +12,16 @@
 
 #pragma mark -
 
-- (IBAction)moveFrontMostWindowToFullscreen:(id)sender;
+- (IBAction)moveFrontMostWindowToFullscreen: (id)sender;
 
 #pragma mark -
 
-- (IBAction)moveFrontMostWindowToLeftHalf:(id)sender;
+- (IBAction)moveFrontMostWindowToLeftHalf: (id)sender;
 
-- (IBAction)moveFrontMostWindowToRightHalf:(id)sender;
+- (IBAction)moveFrontMostWindowToRightHalf: (id)sender;
 
-- (IBAction)moveFrontMostWindowToNextDisplay:(id)sender;
+- (IBAction)moveFrontMostWindowToNextDisplay: (id)sender;
 
-- (IBAction)moveFrontMostWindowToPreviousDisplay:(id)sender;
+- (IBAction)moveFrontMostWindowToPreviousDisplay: (id)sender;
 
 @end

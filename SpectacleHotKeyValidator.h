@@ -3,6 +3,6 @@
 
 @interface SpectacleHotKeyValidator : NSObject<ZeroKitHotKeyValidatorProtocol>
 
-- (BOOL)isHotKeyValid:(ZeroKitHotKey *)hotKey;
+- (BOOL)isHotKeyValid: (ZeroKitHotKey *)hotKey;
 
 @end

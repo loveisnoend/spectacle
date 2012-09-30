@@ -10,6 +10,6 @@
     
 }
 
-- (IBAction)showPreferencesWindow:(id)sender;
+- (IBAction)showPreferencesWindow: (id)sender;
 
 @end

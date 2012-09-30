@@ -3,9 +3,8 @@
 
 @implementation SpectacleHotKeyValidator
 
-- (BOOL)isHotKeyValid:(ZeroKitHotKey *)hotKey
-{
-    return ![[SpectacleHotKeyManager sharedManager] isHotKeyRegistered:hotKey];
+- (BOOL)isHotKeyValid: (ZeroKitHotKey *)hotKey {
+    return ![[SpectacleHotKeyManager sharedManager] isHotKeyRegistered: hotKey];
 }
 
 @end
