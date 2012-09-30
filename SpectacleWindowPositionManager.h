@@ -11,5 +11,5 @@ typedef enum {
 
 @interface SpectacleWindowPositionManager : NSObject
 + (SpectacleWindowPositionManager *)sharedManager;
-- (void)moveFrontMostWindowWithAction: (SpectacleWindowAction)action;
+- (void)moveFrontMostWindowWithAction:(SpectacleWindowAction)action;
 @end

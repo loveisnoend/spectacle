@@ -23,11 +23,11 @@
 
 #pragma mark -
 
-- (void)moveWindowRect: (CGRect)windowRect frameOfScreen: (CGRect)frameOfScreen visibleFrameOfScreen: (CGRect)visibleFrameOfScreen frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement action: (SpectacleWindowAction)action;
+- (void)moveWindowRect:(CGRect)windowRect frameOfScreen:(CGRect)frameOfScreen visibleFrameOfScreen:(CGRect)visibleFrameOfScreen frontMostWindowElement:(AccessibilityWindow *)frontMostWindowElement action:(SpectacleWindowAction)action;
 
 #pragma mark -
 
-- (CGRect)recalculateWindowRect:(AccessibilityWindow *)window frameOfScreen: (CGRect)frameOfScreen visibleFrameOfScreen: (CGRect)visibleFrameOfScreen action: (SpectacleWindowAction)action;
+- (CGRect)recalculateWindowRect:(AccessibilityWindow *)window frameOfScreen:(CGRect)frameOfScreen visibleFrameOfScreen:(CGRect)visibleFrameOfScreen action:(SpectacleWindowAction)action;
 
 @end
 
@@ -37,11 +37,13 @@
 
 static SpectacleWindowPositionManager *sharedInstance = nil;
 
-+ (id)allocWithZone: (NSZone *)zone {
++ (id)allocWithZone:(NSZone *)zone
+{
     return nil;
 }
 
-+ (SpectacleWindowPositionManager *)sharedManager {
++ (SpectacleWindowPositionManager *)sharedManager
+{
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[super allocWithZone:nil] init];
@@ -51,18 +53,20 @@ static SpectacleWindowPositionManager *sharedInstance = nil;
 
 #pragma mark -
 
-- (void)moveFrontMostWindowWithAction: (SpectacleWindowAction)action {
+- (void)moveFrontMostWindowWithAction:(SpectacleWindowAction)action
+{
     [self moveWindow:[self frontMostWindow] withAction:action];
 }
-- (void)moveWindow:(AccessibilityWindow *)window withAction: (SpectacleWindowAction)action {
+- (void)moveWindow:(AccessibilityWindow *)window withAction:(SpectacleWindowAction)action
+{
     CGRect frontMostWindowRect = window.frame;
     CGRect previousRect = CGRectNull;
-    NSScreen *screenOfDisplay = [SpectacleScreenDetection screenWithAction: action andRect: frontMostWindowRect];
+    NSScreen *screenOfDisplay = [SpectacleScreenDetection screenWithAction:action andRect:frontMostWindowRect];
     CGRect frameOfScreen = CGRectNull;
     CGRect visibleFrameOfScreen = CGRectNull;
 
     NSScreen *mainScreen = [NSScreen mainScreen];
-    if (screenOfDisplay && ![screenOfDisplay isEqual:mainScreen]) {
+    if(screenOfDisplay && ![screenOfDisplay isEqual:mainScreen]) {
         NSRect mainScreenFrame = [mainScreen frame];
         frameOfScreen = NSRectToCGRect([screenOfDisplay frame]);
         visibleFrameOfScreen = NSRectToCGRect([screenOfDisplay visibleFrame]);
@@ -79,23 +83,20 @@ static SpectacleWindowPositionManager *sharedInstance = nil;
             visibleFrameOfScreen.size.height -= menuBarHeight;
         }
     }
-    
-    if (CGRectIsNull(frontMostWindowRect) || CGRectIsNull(frameOfScreen) || CGRectIsNull(visibleFrameOfScreen)) {
+
+    if(CGRectIsNull(frontMostWindowRect) || CGRectIsNull(frameOfScreen) || CGRectIsNull(visibleFrameOfScreen)) {
         NSBeep();
         return;
     }
 
     previousRect = frontMostWindowRect;
-    frontMostWindowRect = [self recalculateWindowRect: window
-                                        frameOfScreen: frameOfScreen
-                                 visibleFrameOfScreen: visibleFrameOfScreen
-                                               action: action];
-    
-    if (CGRectEqualToRect(previousRect, frontMostWindowRect) || CGRectIsNull(frontMostWindowRect)) {
+    frontMostWindowRect = [self recalculateWindowRect:window
+                                        frameOfScreen:frameOfScreen
+                                 visibleFrameOfScreen:visibleFrameOfScreen
+                                               action:action];
+
+    if(CGRectEqualToRect(previousRect, frontMostWindowRect) || CGRectIsNull(frontMostWindowRect))
         NSBeep();
-        return;
-    }
-//    [self moveWindowRect: frontMostWindowRect frameOfScreen: frameOfScreen visibleFrameOfScreen: visibleFrameOfScreen frontMostWindowElement: window action: action];
 }
 
 @end
@@ -104,19 +105,19 @@ static SpectacleWindowPositionManager *sharedInstance = nil;
 
 @implementation SpectacleWindowPositionManager (SpectacleWindowPositionManagerPrivate)
 
-- (AccessibilityWindow *)frontMostWindow {
+- (AccessibilityWindow *)frontMostWindow
+{
     ZeroKitAccessibilityElement *systemWideElement = [ZeroKitAccessibilityElement systemWideElement];
-    ZeroKitAccessibilityElement *applicationWithFocusElement = [systemWideElement elementWithAttribute: kAXFocusedApplicationAttribute];
+    ZeroKitAccessibilityElement *applicationWithFocusElement = [systemWideElement elementWithAttribute:kAXFocusedApplicationAttribute];
     AccessibilityWindow *frontMostWindowElement = nil;
 
     ZeroKitAccessibilityElement *tmp;
-    if (applicationWithFocusElement) {
-        tmp = [applicationWithFocusElement elementWithAttribute: kAXFocusedWindowAttribute];
+    if(applicationWithFocusElement) {
+        tmp = [applicationWithFocusElement elementWithAttribute:kAXFocusedWindowAttribute];
         frontMostWindowElement = [AccessibilityWindow withElement:tmp.element];
 
-        if (!frontMostWindowElement) {
+        if(!frontMostWindowElement)
             NSLog(@"Invalid accessibility element provided, unable to determine the size and position of the window.");
-        }
     } else
         return nil;
     return frontMostWindowElement;
@@ -124,59 +125,54 @@ static SpectacleWindowPositionManager *sharedInstance = nil;
 
 #pragma mark -
 
-- (CGRect)rectOfWindowWithAccessibilityElement: (AccessibilityWindow *)accessibilityElement {
-    CGRect result = CGRectNull;
+- (CGRect)rectOfWindowWithAccessibilityElement:(AccessibilityWindow *)accessibilityElement
+{
+    if(!accessibilityElement)
+        return CGRectNull;
+    CFTypeRef windowPositionValue = [accessibilityElement valueOfAttribute:kAXPositionAttribute type:kAXValueCGPointType];
+    CFTypeRef windowSizeValue = [accessibilityElement valueOfAttribute:kAXSizeAttribute type:kAXValueCGSizeType];
+    CGPoint windowPosition;
+    CGSize windowSize;
 
-    if (accessibilityElement) {
-        CFTypeRef windowPositionValue = [accessibilityElement valueOfAttribute: kAXPositionAttribute type: kAXValueCGPointType];
-        CFTypeRef windowSizeValue = [accessibilityElement valueOfAttribute: kAXSizeAttribute type: kAXValueCGSizeType];
-        CGPoint windowPosition;
-        CGSize windowSize;
-        
-        AXValueGetValue(windowPositionValue, kAXValueCGPointType, (void *)&windowPosition);
-        AXValueGetValue(windowSizeValue, kAXValueCGSizeType, (void *)&windowSize);
-        
-        result = CGRectMake(windowPosition.x, windowPosition.y, windowSize.width, windowSize.height);
-    }
-    
-    return result;
+    AXValueGetValue(windowPositionValue, kAXValueCGPointType, (void *)&windowPosition);
+    AXValueGetValue(windowSizeValue, kAXValueCGSizeType, (void *)&windowSize);
+
+    return CGRectMake(windowPosition.x, windowPosition.y, windowSize.width, windowSize.height);
 }
 
 #pragma mark -
 
-- (void)moveWindowRect: (CGRect)windowRect
-         frameOfScreen: (CGRect)frameOfScreen
-  visibleFrameOfScreen: (CGRect)visibleFrameOfScreen
-frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
-                action: (SpectacleWindowAction)action {
+- (void)moveWindowRect:(CGRect)windowRect
+         frameOfScreen:(CGRect)frameOfScreen
+  visibleFrameOfScreen:(CGRect)visibleFrameOfScreen
+frontMostWindowElement:(AccessibilityWindow *)frontMostWindowElement
+                action:(SpectacleWindowAction)action {
 
     frontMostWindowElement.frame = windowRect;
 
     CGRect movedWindowRect = frontMostWindowElement.frame;
-//    NSLog(@"Resized: %@", NSStringFromRect(*(NSRect *)&movedWindowRect));
+    //    NSLog(@"Resized:%@", NSStringFromRect(*(NSRect *)&movedWindowRect));
 
-    if (!CGRectContainsRect(visibleFrameOfScreen, movedWindowRect)) {
-        if (movedWindowRect.origin.x + movedWindowRect.size.width > visibleFrameOfScreen.origin.x + visibleFrameOfScreen.size.width) {
+    if(!CGRectContainsRect(visibleFrameOfScreen, movedWindowRect)) {
+        if(movedWindowRect.origin.x + movedWindowRect.size.width > visibleFrameOfScreen.origin.x + visibleFrameOfScreen.size.width) {
             movedWindowRect.origin.x = (visibleFrameOfScreen.origin.x + visibleFrameOfScreen.size.width) - movedWindowRect.size.width;
-        } else if (movedWindowRect.origin.x < visibleFrameOfScreen.origin.x) {
+        } else if(movedWindowRect.origin.x < visibleFrameOfScreen.origin.x)
             movedWindowRect.origin.x = visibleFrameOfScreen.origin.x;
-        }
-        
-        if (movedWindowRect.origin.y + movedWindowRect.size.height > visibleFrameOfScreen.origin.y + visibleFrameOfScreen.size.height) {
+
+        if(movedWindowRect.origin.y + movedWindowRect.size.height > visibleFrameOfScreen.origin.y + visibleFrameOfScreen.size.height) {
             movedWindowRect.origin.y = (visibleFrameOfScreen.origin.y + visibleFrameOfScreen.size.height) - movedWindowRect.size.height;
-        } else if (movedWindowRect.origin.y < visibleFrameOfScreen.origin.y) {
+        } else if(movedWindowRect.origin.y < visibleFrameOfScreen.origin.y)
             movedWindowRect.origin.y = visibleFrameOfScreen.origin.y;
-        }
-       frontMostWindowElement.frame = movedWindowRect;
+        frontMostWindowElement.frame = movedWindowRect;
     }
 }
 
 #pragma mark -
 
-- (CGRect)recalculateWindowRect: (AccessibilityWindow *)windowToMove
-                  frameOfScreen: (CGRect)frameOfScreen
-           visibleFrameOfScreen: (CGRect)visibleFrameOfScreen
-                         action: (SpectacleWindowAction)action {
+- (CGRect)recalculateWindowRect:(AccessibilityWindow *)windowToMove
+                  frameOfScreen:(CGRect)frameOfScreen
+           visibleFrameOfScreen:(CGRect)visibleFrameOfScreen
+                         action:(SpectacleWindowAction)action {
     CGRect windowRect = windowToMove.frame;
     Boolean canChangeSize;
     AXUIElementIsAttributeSettable(windowToMove.element, (CFStringRef)kAXSizeAttribute, &canChangeSize);
@@ -189,7 +185,7 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
     BOOL switchingSides = (action == SpectacleWindowActionRightHalf && WindowIsLeftAligned(windowToMove.frame, splitFactor, visibleFrameOfScreen)) || (action == SpectacleWindowActionLeftHalf && WindowIsRightAligned(windowToMove.frame, splitFactor, visibleFrameOfScreen));
 
     windowRect.origin.y = visibleFrameOfScreen.origin.y;
-    if (action == SpectacleWindowActionRightHalf) {
+    if(action == SpectacleWindowActionRightHalf) {
         windowRect.origin.x = visibleFrameOfScreen.origin.x + xSplit;
         windowRect.size.width = floor(visibleFrameOfScreen.size.width * (1.0 - splitFactor));
     } else if(action == SpectacleWindowActionLeftHalf) {
@@ -197,7 +193,7 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
         windowRect.size.width = xSplit;
     }
 
-    if ((action == SpectacleWindowActionLeftHalf) || (action == SpectacleWindowActionRightHalf)) {
+    if((action == SpectacleWindowActionLeftHalf) || (action == SpectacleWindowActionRightHalf)) {
         windowRect.size.height = visibleFrameOfScreen.size.height;
 
         // Get the list of windows existing in this half
@@ -226,17 +222,17 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
                 AXUIElementCopyAttributeValue(win, kAXMinimizedAttribute, (CFTypeRef *)&hidden);
                 AccessibilityWindow *window = [AccessibilityWindow withElement:win];
                 if([hidden boolValue] || CGRectEqualToRect(windowToMove.frame, window.frame))
-//                   || (CFEqual(win, windowToMove.element)
-//                                          && [app isEqual:[[NSWorkspace sharedWorkspace] frontmostApplication]]))
+                    //                   || (CFEqual(win, windowToMove.element)
+                    //                                          && [app isEqual:[[NSWorkspace sharedWorkspace] frontmostApplication]]))
                     continue;
 
                 CGRect f = window.frame;
                 if((action == SpectacleWindowActionLeftHalf && WindowIsRightAligned(f, splitFactor, visibleFrameOfScreen))
-                 ||(action == SpectacleWindowActionRightHalf && WindowIsLeftAligned(f, splitFactor, visibleFrameOfScreen))) {
+                   ||(action == SpectacleWindowActionRightHalf && WindowIsLeftAligned(f, splitFactor, visibleFrameOfScreen))) {
                     [windowsToFix addObject:window];
                 }
                 else if((action == SpectacleWindowActionLeftHalf  && WindowIsLeftAligned(f, splitFactor, visibleFrameOfScreen))
-                      ||(action == SpectacleWindowActionRightHalf && WindowIsRightAligned(f, splitFactor, visibleFrameOfScreen))) {
+                        ||(action == SpectacleWindowActionRightHalf && WindowIsRightAligned(f, splitFactor, visibleFrameOfScreen))) {
                     [involvedWindows addObject:window];
                 }
             }
@@ -256,19 +252,19 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
                 ++i;
             }
         }
-        [self moveWindowRect: windowRect frameOfScreen: frameOfScreen visibleFrameOfScreen: visibleFrameOfScreen frontMostWindowElement: windowToMove action: action];
+        [self moveWindowRect:windowRect frameOfScreen:frameOfScreen visibleFrameOfScreen:visibleFrameOfScreen frontMostWindowElement:windowToMove action:action];
 
         if(switchingSides && [windowsToFix count] > 0) {
             [windowsToFix sortUsingComparator:^NSComparisonResult(AccessibilityWindow *obj1, AccessibilityWindow *obj2) {
                 return obj1.frame.origin.y > obj2.frame.origin.y ? NSOrderedDescending : NSOrderedAscending;
             }];
-            [self recalculateWindowRect:[windowsToFix objectAtIndex:0]
+            [self recalculateWindowRect:windowsToFix[0]
                           frameOfScreen:frameOfScreen
                    visibleFrameOfScreen:visibleFrameOfScreen
                                  action:action == SpectacleWindowActionLeftHalf ? SpectacleWindowActionRightHalf : SpectacleWindowActionLeftHalf];
         }
         return windowRect;
-  } else if(action == SpectacleWindowActionFullscreen)
+    } else if(action == SpectacleWindowActionFullscreen)
         windowRect = visibleFrameOfScreen;
     else if(MovingToNextOrPreviousDisplay(action)) {
         NSScreen *windowScreen = [SpectacleScreenDetection screenWithAction:SpectacleWindowActionFullscreen andRect:windowToMove.frame];
@@ -279,8 +275,8 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
                       visibleFrameOfScreen:visibleFrameOfScreen
                                     action:(windowToMove.frame.origin.x >= windowScrXSplit) ? SpectacleWindowActionRightHalf : SpectacleWindowActionLeftHalf];
     }
-    
-    [self moveWindowRect: windowRect frameOfScreen: frameOfScreen visibleFrameOfScreen: visibleFrameOfScreen frontMostWindowElement: windowToMove action: action];
+
+    [self moveWindowRect:windowRect frameOfScreen:frameOfScreen visibleFrameOfScreen:visibleFrameOfScreen frontMostWindowElement:windowToMove action:action];
     return windowRect;
 }
 
@@ -288,16 +284,19 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
 
 @implementation AccessibilityWindow
 @dynamic frame;
-+ (AccessibilityWindow *)withElement:(AXUIElementRef)element {
++ (AccessibilityWindow *)withElement:(AXUIElementRef)element
+{
     return [[[self alloc] initWithElement:element] autorelease];
 }
-- (id)initWithElement:(AXUIElementRef)element {
+- (id)initWithElement:(AXUIElementRef)element
+{
     if(!(self = [self init]))
         return nil;
     self.element = element;
     return self;
 }
-- (id)init {
+- (id)init
+{
     if(!(self = [super init]))
         return nil;
     _frameCache = CGRectNull;
@@ -307,11 +306,12 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
 {
     return [object isKindOfClass:[self class]] && CFEqual([(AccessibilityWindow *)object element], self.element);
 }
-- (CGRect)frame {
+- (CGRect)frame
+{
     if(!CGRectIsNull(_frameCache))
         return _frameCache;
-    CFTypeRef windowPositionValue = [self valueOfAttribute: kAXPositionAttribute type: kAXValueCGPointType];
-    CFTypeRef windowSizeValue = [self valueOfAttribute: kAXSizeAttribute type: kAXValueCGSizeType];
+    CFTypeRef windowPositionValue = [self valueOfAttribute:kAXPositionAttribute type:kAXValueCGPointType];
+    CFTypeRef windowSizeValue = [self valueOfAttribute:kAXSizeAttribute type:kAXValueCGSizeType];
     CGPoint windowPosition;
     CGSize windowSize;
 
@@ -320,14 +320,15 @@ frontMostWindowElement: (AccessibilityWindow *)frontMostWindowElement
 
     return CGRectMake(windowPosition.x, windowPosition.y, windowSize.width, windowSize.height);
 }
-- (void)setFrame: (CGRect)windowRect {
+- (void)setFrame:(CGRect)windowRect
+{
     _frameCache = CGRectNull;
     AXValueRef windowRectPositionRef = AXValueCreate(kAXValueCGPointType, (const void *)&windowRect.origin);
     AXValueRef windowRectSizeRef = AXValueCreate(kAXValueCGSizeType, (const void *)&windowRect.size);
-//    NSLog(@">> Sizing: %@", NSStringFromRect(*(NSRect *)&windowRect));
-    [self setValue: windowRectPositionRef forAttribute: kAXPositionAttribute];
-    [self setValue: windowRectSizeRef forAttribute: kAXSizeAttribute];
-    //    [self setValue: windowRectPositionRef forAttribute: kAXPositionAttribute];
-    //    [self setValue: windowRectSizeRef forAttribute: kAXSizeAttribute];
+    //    NSLog(@">> Sizing:%@", NSStringFromRect(*(NSRect *)&windowRect));
+    [self setValue:windowRectPositionRef forAttribute:kAXPositionAttribute];
+    [self setValue:windowRectSizeRef forAttribute:kAXSizeAttribute];
+    //    [self setValue:windowRectPositionRef forAttribute:kAXPositionAttribute];
+    //    [self setValue:windowRectSizeRef forAttribute:kAXSizeAttribute];
 }
 @end

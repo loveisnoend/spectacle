@@ -597,8 +597,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2D1E1AD5147E08DE0021D73D /* SpectacleDevelopment.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				SDKROOT = macosx;
 				VERSION_INFO_FILE = "";
 			};
 			name = Development;
@@ -607,8 +609,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2D1E1AD6147E08DE0021D73D /* SpectacleRelease.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				SDKROOT = macosx;
 				VERSION_INFO_FILE = "";
 			};
 			name = Release;

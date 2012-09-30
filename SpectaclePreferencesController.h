@@ -16,20 +16,20 @@
     IBOutlet NSPopUpButton *myStatusItemEnabled;
 }
 
-- (id)initWithApplicationController: (SpectacleApplicationController *)applicationController;
+- (id)initWithApplicationController:(SpectacleApplicationController *)applicationController;
 
 #pragma mark -
 
-- (IBAction)toggleWindow: (id)sender;
+- (IBAction)toggleWindow:(id)sender;
 
 #pragma mark -
 
-- (IBAction)hideWindow: (id)sender;
+- (IBAction)hideWindow:(id)sender;
 
 #pragma mark -
 
-- (IBAction)toggleLoginItem: (id)sender;
+- (IBAction)toggleLoginItem:(id)sender;
 
-- (IBAction)toggleStatusItem: (id)sender;
+- (IBAction)toggleStatusItem:(id)sender;
 
 @end

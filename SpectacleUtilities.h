@@ -31,7 +31,7 @@
 
 #pragma mark -
 
-#define WindowRectToString(windowRect) [NSString stringWithFormat: @"(%f, %f) %fx%f", windowRect.origin.x, windowRect.origin.y, windowRect.size.width, windowRect.size.height]
+#define WindowRectToString(windowRect) [NSString stringWithFormat:@"(%f, %f) %fx%f", windowRect.origin.x, windowRect.origin.y, windowRect.size.width, windowRect.size.height]
 
 #pragma mark -
 
@@ -39,7 +39,7 @@
 
 + (void)displayAccessibilityAPIAlert;
 
-+ (void)displayRunningInBackgroundAlertWithCallback: (void (^)(BOOL, BOOL))callback;
++ (void)displayRunningInBackgroundAlertWithCallback:(void (^)(BOOL, BOOL))callback;
 
 #pragma mark -
 
@@ -47,14 +47,11 @@
 
 #pragma mark -
 
-+ (NSArray *)hotKeysFromDictionary: (NSDictionary *)dictionary hotKeyTarget: (id)target;
++ (NSArray *)hotKeysFromDictionary:(NSDictionary *)dictionary hotKeyTarget:(id)target;
 
 #pragma mark -
 
-+ (ZeroKitHotKeyAction *)actionForHotKeyWithName: (NSString *)key target: (id)target;
++ (ZeroKitHotKeyAction *)actionForHotKeyWithName:(NSString *)key target:(id)target;
 
-#pragma mark -
-
-+ (NSInteger)currentWorkspace;
 
 @end
